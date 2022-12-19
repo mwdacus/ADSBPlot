@@ -11,7 +11,9 @@ To install the `+ADSBtools` helper functions, add the [`ADSBtools`](https://gith
 
 To use GUI interface `ADSB_Main_Plot`, open `ADSB_Main_Plot.mlapp` in MATLAB click 'Run.' To upload ADS-B data, click `Upload Files` in the top left corner of the window. You can select one or multiple files before closing the window. The uploaded data must be either the raw Position ADS-B message, or a State Vector (SV) report (which contain at least {time,lat, lon, alt, and icao}). If the uploaded data does not contain NIC values, then it will default to the ICAO number, and will not allow the user to select NIC as the desired marker.
 
-(images/ui_adsbplot.png)
+![My Image](images/ui_adsbplot.png)
+
+
 
 ## Filtering Methods
 ### Markers
