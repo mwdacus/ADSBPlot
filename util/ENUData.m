@@ -9,5 +9,5 @@
 
 function [data]=ENUData(lat,lon,alt,origin)
     enudata=lla2enu([lat,lon,alt],origin,'ellipsoid');
-    data=cell2table(enudata,'VariableNames',{'x','y','z'});
+    data=array2table(enudata,'VariableNames',{'x','y','z'});
 end
