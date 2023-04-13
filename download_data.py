@@ -51,12 +51,14 @@ def sendRequest(url, data, apiKey = None):
     
     return output['data']
 
-def DownloadData(downloadIds,download):
+def DownloadData(downloadIds,download,filenames):
     downloadIds.append(download['downloadId'])
     r=requests.get(download['url'])
-    open('geotif/'+str(download['displayId'])+'.tif','wb').write(r.content)
+    filename=str(download['displayId'])+'.tif'
+    filenames.append(filename)
+    open('geotif/'+filename,'wb').write(r.content)
     print("DOWNLOAD: " + download['url'])
-    return downloadIds
+    return downloadIds, filename
 
 def main(boxlat,boxlon,username,password):
     print("\nRunning Scripts...\n")
@@ -128,13 +130,14 @@ def main(boxlat,boxlon,username,password):
                 payload = {'label' : label}
                 moreDownloadUrls = sendRequest(serviceUrl + "download-retrieve", payload, apiKey)
                 downloadIds = []  
+                filenames=[]
                 for download in moreDownloadUrls['available']:
                     if str(download['downloadId']) in requestResults['newRecords'] or str(download['downloadId']) in requestResults['duplicateProducts']:
-                        DownloadData(downloadIds,download)
+                        DownloadData(downloadIds,download,filenames)
                     
                 for download in moreDownloadUrls['requested']:
                     if str(download['downloadId']) in requestResults['newRecords'] or str(download['downloadId']) in requestResults['duplicateProducts']:
-                       DownloadData(downloadIds,download)
+                       DownloadData(downloadIds,download,filenames)
                     
                 # Didn't get all of the reuested downloads, call the download-retrieve method again probably after 30 seconds
                 while len(downloadIds) < (requestedDownloadsCount - len(requestResults['failed'])): 
@@ -145,12 +148,15 @@ def main(boxlat,boxlon,username,password):
                     moreDownloadUrls = sendRequest(serviceUrl + "download-retrieve", payload, apiKey)
                     for download in moreDownloadUrls['available']:                            
                         if download['downloadId'] not in downloadIds and (str(download['downloadId']) in requestResults['newRecords'] or str(download['downloadId']) in requestResults['duplicateProducts']):
-                            DownloadData(downloadIds,download)          
+                            DownloadData(downloadIds,download,filenames)          
             else:
                 # Download geotiff files 
                 for download in requestResults['availableDownloads']:
-                    DownloadData(downloadIds,download)
+                    DownloadData(downloadIds,download,filenames)
                 print("\nAll downloads are available to download.\n")
+
+        #return geotiff filenames
+        return filenames
     else:
         print("Search found no results.\n")
                 
@@ -167,4 +173,4 @@ if __name__ == '__main__':
     boxlon=[-105.5, -104.5]
     username="username" #enter username and password here
     password="password" 
-    main(boxlat,boxlon,username,password)
+    filenames=main(boxlat,boxlon,username,password)
