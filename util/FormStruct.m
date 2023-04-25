@@ -34,3 +34,11 @@ function [pkg]=FormStruct(app)
             'adsbdata',app.adsbdata,'Z',elevdata,'RZ',geodata);
         pkg=app.eventdata;
 end
+
+
+%% Local Functions
+%Add ENU table to existing dataset
+function [data]=ENUData(lat,lon,alt,origin)
+    enudata=lla2enu([lat,lon,alt],origin,'ellipsoid');
+    data=array2table(enudata,'VariableNames',{'x','y','z'});
+end
