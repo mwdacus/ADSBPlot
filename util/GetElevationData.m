@@ -8,7 +8,7 @@
 %*************************************************************************
 
 
-function [mosaic,mosaicRZ]=GetElevationData(boxlat,boxlon,username,password)
+function [mosaicZ,mosaicRZ]=GetElevationData(boxlat,boxlon,username,password)
     %import module for api
     py.importlib.import_module('download_data');
     %find directory where geotiff files are stored, if empty, call api
@@ -54,13 +54,15 @@ function [mosaic,mosaicRZ]=GetElevationData(boxlat,boxlon,username,password)
     lonlimits=[floor(boxlon(1)) ceil(boxlon(2))];
     [~,grid_col]=size(elev_data);
     cols_cell=cell(1,grid_col);
+    %flip laterally (north and south)
+    elev_data=flip(elev_data,1);
     for k=1:grid_col
         cols_cell{k}=vertcat(elev_data{:,k});
     end
-    %flip matrix (in latitude direction) match with coordinate system
-    mosaic=flip(horzcat(cols_cell{:}),1);
-    mosaicRZ = georefpostings(latlimits,lonlimits,size(mosaic));
+    mosaicZ=horzcat(cols_cell{:});
+    mosaicRZ = georefpostings(latlimits,lonlimits,size(mosaicZ));
     mosaicRZ.ColumnsStartFrom = 'north';
+    mosaicRZ.RowsStartFrom='west';
 end
 
 %% Local Functions
