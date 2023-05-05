@@ -12,6 +12,9 @@ function [pkg]=FormStruct(app)
         location=struct('lat',app.Lat.Value,'lon',app.Lon.Value,'alt',app.Alt.Value);
         airport=struct('icao',app.AirportICAO.Value,'Name',app.NearestAirportName.Value,...
             'Location',location);
+        if ismember("mintime",app.adsbdata.Properties.VariableNames) 
+            app.adsbdata=renamevars(app.adsbdata,"mintime","time");
+        end
         %Read ADS-B Data to populate struct
         starttime=min(app.adsbdata.time);
         endtime=max(app.adsbdata.time);
@@ -19,6 +22,9 @@ function [pkg]=FormStruct(app)
         boxlon=[min(app.adsbdata.lon) max(app.adsbdata.lon)];
         boxalt=[min(app.adsbdata.alt) max(app.adsbdata.alt)];
         %find all part 91/135 and 121 aircraft
+        if ismember("icao24",app.adsbdata.Properties.VariableNames) 
+            app.adsbdata=renamevars(app.adsbdata,"icao24","icao");
+        end
         all_aircraft=unique(app.adsbdata.icao);
         [icao91,icao121,icao135]=FindICAO(all_aircraft);
         %Create East-North-Up Table, combine with original adsbdata
